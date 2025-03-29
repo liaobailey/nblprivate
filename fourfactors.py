@@ -62,10 +62,13 @@ rnd = load_data_rnd()
 
 away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
-st.dataframe(away)
+
 
 start_date = away['DATE_x'].min()
 end_date = away['DATE_x'].max()
+
+st.write(start_date)
+st.write(end_date)
 
 selected_dates = st.slider(
     "Select date range", 
