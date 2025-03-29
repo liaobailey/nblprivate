@@ -70,12 +70,10 @@ home['DATE_format'] = pd.to_datetime(home['DATE_x'], errors='coerce')
 start_date = away['DATE_format'].min()
 end_date = away['DATE_format'].max()
 
-selected_dates = st.slider(
-    "Select date range", 
-    min_value=start_date, 
-    max_value=end_date, 
-    value=(start_date, end_date),
-    format="YYYY-MM-DD"
+start_time = st.slider(
+    "When do you start?",
+    value=datetime(2020, 1, 1, 9, 30),
+    format="MM/DD/YY - hh:mm",
 )
 
 filtered_data_home = home[(home['DATE_x'] >= selected_dates[0]) & (home['DATE_x'] <= selected_dates[1])]
