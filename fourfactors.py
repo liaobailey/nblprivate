@@ -64,8 +64,8 @@ away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 
 
-away['DATE_format'] = pd.to_datetime(away['DATE_x'])
-home['DATE_format'] = pd.to_datetime(home['DATE_x'])
+away['DATE_format'] = pd.to_datetime(away['DATE_x'], errors='coerce')
+home['DATE_format'] = pd.to_datetime(home['DATE_x'], errors='coerce')
 
 start_date = away['DATE_format'].min()
 end_date = away['DATE_format'].max()
