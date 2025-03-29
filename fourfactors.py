@@ -4,6 +4,7 @@ import gdown
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 import plotly.graph_objects as go
+import matplotlib
 
 # Set page configuration as the first Streamlit call
 st.set_page_config(layout="wide")
