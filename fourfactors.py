@@ -82,10 +82,10 @@ selected_dates = st.slider(
     format="YYYY-MM-DD"
 )
 
+string_list = [dt.strftime('%Y-%m-%d') for dt in selected_dates]
 
-
-filtered_data_home = home[(home['DATE_x'] >= selected_dates[0]) & (home['DATE_x'] <= selected_dates[1])]
-filtered_data_away = away[(away['DATE_x'] >= selected_dates[0]) & (away['DATE_x'] <= selected_dates[1])]
+filtered_data_home = home[(home['DATE_x'] >= string_list[0]) & (home['DATE_x'] <= string_list[1])]
+filtered_data_away = away[(away['DATE_x'] >= string_list[0]) & (away['DATE_x'] <= string_list[1])]
 
 
 
