@@ -43,7 +43,7 @@ def load_data_home():
     con = duckdb.connect(DB_FILE)
     home_pre = con.execute(sql_home).fetchdf()
     con.close()
-    return close
+    return home_pre
 
 @st.cache_data
 def load_data_rnd():
