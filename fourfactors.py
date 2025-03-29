@@ -64,8 +64,8 @@ away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 st.dataframe(away)
 
-start_date = away['DATE'].min()
-end_date = away['DATE'].max()
+start_date = away['DATE_x'].min()
+end_date = away['DATE_x'].max()
 
 selected_dates = st.slider(
     "Select date range", 
@@ -75,8 +75,8 @@ selected_dates = st.slider(
     format="YYYY-MM-DD"
 )
 
-filtered_data_home = home[(home['DATE'] >= selected_dates[0]) & (home['DATE'] <= selected_dates[1])]
-filtered_data_away = away[(away['DATE'] >= selected_dates[0]) & (away['DATE'] <= selected_dates[1])]
+filtered_data_home = home[(home['DATE_x'] >= selected_dates[0]) & (home['DATE_x'] <= selected_dates[1])]
+filtered_data_away = away[(away['DATE_x'] >= selected_dates[0]) & (away['DATE_x'] <= selected_dates[1])]
 
 
 
