@@ -67,7 +67,8 @@ home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 away['DATE_format'] = away['DATE_x'].map(lambda x: pd.Timestamp(x).to_pydatetime())
 home['DATE_format'] = home['DATE_x'].map(lambda x: pd.Timestamp(x).to_pydatetime())
 
-
+start_date = away['DATE_format'].min()
+end_date = away['DATE_format'].max()
 
 # Use Streamlit slider with the datetime objects
 selected_dates = st.slider(
