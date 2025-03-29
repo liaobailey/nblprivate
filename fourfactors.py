@@ -63,23 +63,20 @@ rnd = load_data_rnd()
 away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 
-all_option = "All Rounds"
-# Create options with the "All" option at the beginning
-options = [all_option] + list(away["round"].unique())
+start_date = away['Date'].min()
+end_date = away['Date'].max()
 
-
-season_select = st.sidebar.multiselect(
-    "Select Round",
-    options=options,
-    default=[all_option]
+selected_dates = st.slider(
+    "Select date range", 
+    min_value=start_date, 
+    max_value=end_date, 
+    value=(start_date, end_date),
+    format="YYYY-MM-DD"
 )
 
-if all_option in season_select:
-    filtered_data_away = away
-    filtered_data_home = home
-else:
-    filtered_data_away = away[away["round"].isin(season_select)]
-    filtered_data_home = home[home["round"].isin(season_select)]
+filtered_data_home = home[(home['DATE'] >= selected_dates[0]) & (home['DATE'] <= selected_dates[1])]
+filtered_data_away = away[(away['DATE'] >= selected_dates[0]) & (away['DATE'] <= selected_dates[1])]
+
 
 
 home_agg = filtered_data_home.groupby(['GAMEID', 'TEAM']).agg({
