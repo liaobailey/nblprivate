@@ -78,7 +78,7 @@ end_date = pd.Timestamp('2021-04-10')
 #     format="YYYY-MM-DD"
 # )
 
-st.write(start_dates)
+st.write(start_date)
 
 
 # filtered_data_home = home[(home['DATE_x'] >= selected_dates[0]) & (home['DATE_x'] <= selected_dates[1])]
