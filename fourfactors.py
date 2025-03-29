@@ -63,8 +63,8 @@ rnd = load_data_rnd()
 away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 
-start_date = away['Date'].min()
-end_date = away['Date'].max()
+start_date = away['DATE'].min()
+end_date = away['DATE'].max()
 
 selected_dates = st.slider(
     "Select date range", 
