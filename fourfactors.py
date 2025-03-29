@@ -1,6 +1,7 @@
 import streamlit as st
 import duckdb
 import gdown
+import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 import plotly.graph_objects as go
 
