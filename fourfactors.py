@@ -121,14 +121,24 @@ clean['def_OREB'] = clean['OFF_opp']/(clean['OFF_opp'] + clean['DEF_self'])
 clean['def_FTR'] = clean['FTM_opp']/clean['FGA_opp']
 
 
-display_df = clean[['TEAM_self', 'off_EFG', 'off_TOV', 'off_OREB', 'off_FTR', 'def_EFG',
-       'def_TOV', 'def_OREB', 'def_FTR']]
+clean['off_EFG_rank'] = clean['off_EFG'].rank(pct=True)
+clean['off_TOV_rank'] = clean['off_TOV'].rank(pct=True)
+clean['off_OREB_rank'] = clean['off_OREB'].rank(pct=True)
+clean['off_FTR_rank'] = clean['off_FTR'].rank(pct=True)
 
-display_df.columns = ['Team Name', 'Off EFG%', 'Off TOV%', 'Off OREB%', 'Off FTR', 'Def EFG%', 'Def TOV%', 'Def OREB%', 'Def FTR']
-styled_df = display_df.style.background_gradient(cmap='viridis', subset=['Off EFG%'])
+
+clean['def_EFG_rank'] = clean['def_EFG'].rank(pct=True)
+clean['def_TOV_rank'] = clean['def_TOV'].rank(pct=True)
+clean['def_OREB_rank'] = clean['def_OREB'].rank(pct=True)
+clean['def_FTR_rank'] = clean['def_FTR'].rank(pct=True)
+
+display_df = clean[['TEAM_self', 'off_EFG_rank', 'off_TOV_rank', 'off_OREB_rank', 'off_FTR_rank', 'def_EFG_rank',
+       'def_TOV_rank', 'def_OREB_rank', 'def_FTR_rank']]
+
+display_df.columns = ['Team Name', 'Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank']
+styled_df = display_df.style.background_gradient(cmap='coolwarm', subset=['Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank'])
+
 
 # Display the styled DataFrame in Streamlit
 st.dataframe(styled_df)
 
-# Display the styled DataFrame in Streamlit
-st.dataframe(styled_df)
