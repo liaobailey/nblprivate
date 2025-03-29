@@ -64,11 +64,14 @@ away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 
 
-away['DATE_format'] = away['DATE_x'].map(lambda x: pd.Timestamp(x).to_pydatetime())
-home['DATE_format'] = home['DATE_x'].map(lambda x: pd.Timestamp(x).to_pydatetime())
+away['DATE_format'] = away['DATE_x'].map(lambda x: pd.Timestamp(x))
+home['DATE_format'] = home['DATE_x'].map(lambda x: pd.Timestamp(x))
 
 start_date = away['DATE_format'].min()
 end_date = away['DATE_format'].max()
+
+start_date = start_date.to_pydatetime()
+end_date = end_date.to_pydatetime()
 
 # Use Streamlit slider with the datetime objects
 selected_dates = st.slider(
