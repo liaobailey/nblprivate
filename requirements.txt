@@ -4,3 +4,4 @@ gdown
 streamlit-aggrid
 plotly
 pandas
+matplotlib
