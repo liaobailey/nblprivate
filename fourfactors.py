@@ -116,7 +116,7 @@ clean['off_FTR'] = clean['FTM_self']/clean['FGA_self']
 
 clean['def_EFG'] = (clean['FGM_opp'] + .5*clean['3FGM_opp'])/clean['FGA_opp']
 clean['def_TOV'] = clean['TOV_opp']/(clean['FGA_opp'] + clean['FTA_opp']*.44 + clean['TOV_opp'])
-clean['def_OREB'] = clean['DEF_self']/(clean['OFF_opp'] + clean['DEF_self'])
+clean['def_OREB'] = clean['OFF_opp']/(clean['OFF_opp'] + clean['DEF_self'])
 clean['def_FTR'] = clean['FTM_opp']/clean['FGA_opp']
 
 
