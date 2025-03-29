@@ -127,13 +127,17 @@ clean['off_OREB_rank'] = clean['off_OREB'].rank(pct=True)
 clean['off_FTR_rank'] = clean['off_FTR'].rank(pct=True)
 
 
-clean['def_EFG_rank'] = clean['def_EFG'].rank(pct=True)
-clean['def_TOV_rank'] = clean['def_TOV'].rank(pct=True)
-clean['def_OREB_rank'] = clean['def_OREB'].rank(pct=True)
-clean['def_FTR_rank'] = clean['def_FTR'].rank(pct=True)
+clean['def_EFG_rank'] = 1-clean['def_EFG'].rank(pct=True)
+clean['def_TOV_rank'] = 1-clean['def_TOV'].rank(pct=True)
+clean['def_OREB_rank'] = 1-clean['def_OREB'].rank(pct=True)
+clean['def_FTR_rank'] = 1-clean['def_FTR'].rank(pct=True)
+
+
 
 display_df = clean[['TEAM_self', 'off_EFG_rank', 'off_TOV_rank', 'off_OREB_rank', 'off_FTR_rank', 'def_EFG_rank',
        'def_TOV_rank', 'def_OREB_rank', 'def_FTR_rank']]
+
+display_df.iloc[:, 1:] = display_df.iloc[:, 1:].round(2)
 
 display_df.columns = ['Team Name', 'Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank']
 styled_df = display_df.style.background_gradient(cmap='coolwarm', subset=['Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank'])
