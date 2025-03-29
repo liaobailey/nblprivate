@@ -64,15 +64,10 @@ away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 
 
-# away['DATE_format'] = pd.to_datetime(away['DATE_x'], errors='coerce')
-# home['DATE_format'] = pd.to_datetime(home['DATE_x'], errors='coerce')
+away['DATE_format'] = pd.Timestamp(away['DATE_x'], errors='coerce').to_pydatetime()
+home['DATE_format'] = pd.Timestamp(home['DATE_x'], errors='coerce').to_pydatetime()
 
-start_date = pd.Timestamp('2021-01-01')
-end_date = pd.Timestamp('2021-04-10')
 
-# Convert the pandas Timestamps to Python datetime objects
-start_date = start_date.to_pydatetime()
-end_date = end_date.to_pydatetime()
 
 # Use Streamlit slider with the datetime objects
 selected_dates = st.slider(
