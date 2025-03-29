@@ -70,6 +70,11 @@ home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 start_date = pd.Timestamp('2021-01-01')
 end_date = pd.Timestamp('2021-04-10')
 
+# Convert the pandas Timestamps to Python datetime objects
+start_date = start_date.to_pydatetime()
+end_date = end_date.to_pydatetime()
+
+# Use Streamlit slider with the datetime objects
 selected_dates = st.slider(
     "Select date range", 
     min_value=start_date, 
@@ -78,7 +83,8 @@ selected_dates = st.slider(
     format="YYYY-MM-DD"
 )
 
-st.write(start_date)
+# Display the selected date range
+st.write(f"Selected Date Range: {selected_dates}")
 
 
 # filtered_data_home = home[(home['DATE_x'] >= selected_dates[0]) & (home['DATE_x'] <= selected_dates[1])]
