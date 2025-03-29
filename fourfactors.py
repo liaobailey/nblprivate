@@ -124,7 +124,10 @@ display_df = clean[['TEAM_self', 'off_EFG', 'off_TOV', 'off_OREB', 'off_FTR', 'd
        'def_TOV', 'def_OREB', 'def_FTR']]
 
 display_df.columns = ['Team Name', 'Off EFG%', 'Off TOV%', 'Off OREB%', 'Off FTR', 'Def EFG%', 'Def TOV%', 'Def OREB%', 'Def FTR']
-styled_df = display_df.background_gradient(cmap='viridis', subset=['Off EFG%'])
+styled_df = display_df.style.background_gradient(cmap='viridis', subset=['Off EFG%'])
+
+# Display the styled DataFrame in Streamlit
+st.dataframe(styled_df)
 
 # Display the styled DataFrame in Streamlit
 st.dataframe(styled_df)
