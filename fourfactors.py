@@ -138,13 +138,9 @@ display_df = clean[['TEAM_self', 'off_EFG_rank', 'off_TOV_rank', 'off_OREB_rank'
        'def_TOV_rank', 'def_OREB_rank', 'def_FTR_rank']]
 
 display_df.iloc[:, 1:] = display_df.iloc[:, 1:].round(2)
-
-# Set pandas display options to ensure all floating-point numbers display with 2 decimals
-pd.set_option('display.float_format', '{:.2f}'.format)
-
-
 display_df.columns = ['Team Name', 'Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank']
 styled_df = display_df.style.background_gradient(cmap='coolwarm', subset=['Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank'])
+styled_df = styled_df.format({col: '{:.2f}' for col in display_df.columns[1:]})
 
-st.write(styled_df)
+st.dataframe(styled_df)
 
