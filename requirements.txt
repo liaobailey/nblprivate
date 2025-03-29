@@ -1,0 +1,5 @@
+streamlit
+duckdb
+gdown
+streamlit-aggrid
+plotly
