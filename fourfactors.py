@@ -108,6 +108,18 @@ away_tot = home_agg.merge(away_agg, on = ['GAMEID'], how = 'left', suffixes = ('
 
 tot = pd.concat([home_tot, away_tot])
 clean = tot.groupby(['TEAM_self']).sum().reset_index().drop(columns = 'GAMEID')
+
+clean['off_EFG'] = (clean['FGM_self'] + .5*clean['3FGM_self'])/clean['FGA_self']
+clean['off_TOV'] = clean['TOV_self']/(clean['FGA_self'] + clean['FTA_self']*.44 + clean['TOV_self'])
+clean['off_OREB'] = clean['OFF_self']/(clean['OFF_self'] + clean['DEF_opp'])
+clean['off_FTR'] = clean['FTM_self']/clean['FGA_self']
+
+clean['def_EFG'] = (clean['FGM_opp'] + .5*clean['3FGM_opp'])/clean['FGA_opp']
+clean['def_TOV'] = clean['TOV_opp']/(clean['FGA_opp'] + clean['FTA_opp']*.44 + clean['TOV_opp'])
+clean['def_OREB'] = clean['DEF_self']/(clean['OFF_opp'] + clean['DEF_self'])
+clean['def_FTR'] = clean['FTM_opp']/clean['FGA_opp']
+
+
 display_df = clean[['TEAM_self', 'off_EFG', 'off_TOV', 'off_OREB', 'off_FTR', 'def_EFG',
        'def_TOV', 'def_OREB', 'def_FTR']]
 
