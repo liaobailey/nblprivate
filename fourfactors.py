@@ -149,5 +149,5 @@ display_df.columns = ['Team Name', 'Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% 
 styled_df = display_df.style.background_gradient(cmap='coolwarm', subset=['Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank'])
 styled_df = styled_df.format({col: '{:.2f}' for col in display_df.columns[1:]})
 
-st.dataframe(styled_df)
+st.dataframe(styled_df, height=500)
 
