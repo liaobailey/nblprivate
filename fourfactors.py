@@ -70,13 +70,13 @@ home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 start_date = pd.Timestamp('2021-01-01')
 end_date = pd.Timestamp('2021-04-10')
 
-# selected_dates = st.slider(
-#     "Select date range", 
-#     min_value=start_date, 
-#     max_value=end_date, 
-#     value=(start_date, end_date),
-#     format="YYYY-MM-DD"
-# )
+selected_dates = st.slider(
+    "Select date range", 
+    min_value=start_date, 
+    max_value=end_date, 
+    value=(start_date, end_date),
+    format="YYYY-MM-DD"
+)
 
 st.write(start_date)
 
