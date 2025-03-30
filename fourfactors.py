@@ -2,9 +2,6 @@ import streamlit as st
 import duckdb
 import gdown
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
-import plotly.graph_objects as go
-import matplotlib
 
 # Set page configuration as the first Streamlit call
 st.set_page_config(layout="wide")
@@ -23,11 +20,40 @@ select q.gameid, date
 from quarter_score_gamelog q
 join away_player_game_log a on q.gameid = a.gameid
 group by 1,2
-)
+),
+rnd as (
 select q.*, date, row_number() over (partition by team order by date asc) as round
 from quarter_score_gamelog q
 join cte_date c on q.gameid = c.gameid
+),
+opp as (
+select q.gameid, q.team, q2.team as opp_team
+from quarter_score_gamelog q
+join quarter_score_gamelog q2 on q.gameid = q2.gameid and q.team <> q2.team
+)
+select r.*, opp_team
+from rnd r
+join opp o on r.gameid = o.gameid and r.team = o.team
 """
+sql_gamelog = """
+with cte_ff as (
+select ff.*, ff2.efg as opp_efg, ff2.tov as opp_tov, ff2.oreb as opp_oreb, ff2.ftr as opp_ftr
+from four_factor_gamelog ff
+join four_factor_gamelog ff2 on ff.gameid = ff2.gameid and ff.team <> ff2.team
+)
+select ff.*, poss, ortg, drtg, netrtg
+from cte_ff ff
+join net_rating_gamelog nrg on ff.team = nrg.team and ff.gameid = nrg.gameid
+"""
+sql_adv = """
+select *
+from player_advanced
+"""
+sql_trad = """
+select *
+from player_traditional
+"""
+
 
 @st.cache_data
 def load_data_away():
@@ -56,9 +82,38 @@ def load_data_rnd():
     con.close()
     return rnd
 
+@st.cache_data
+def load_data_gamelog():
+    # Download the database file
+    gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", DB_FILE, quiet=False)
+    con = duckdb.connect(DB_FILE)
+    gl = con.execute(sql_gamelog).fetchdf()
+    con.close()
+    return gl
+@st.cache_data
+def load_data_adv():
+    # Download the database file
+    gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", DB_FILE, quiet=False)
+    con = duckdb.connect(DB_FILE)
+    adv = con.execute(sql_adv).fetchdf()
+    con.close()
+    return adv
+@st.cache_data
+def load_data_trad():
+    # Download the database file
+    gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", DB_FILE, quiet=False)
+    con = duckdb.connect(DB_FILE)
+    trad = con.execute(sql_trad).fetchdf()
+    con.close()
+    return trad
+
+
 away_pre = load_data_away()
 home_pre = load_data_home()
 rnd = load_data_rnd()
+gamelog_pre = load_data_gamelog()
+adv = load_data_adv()
+trad = load_data_trad()
 
 away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
@@ -73,11 +128,13 @@ end_date = away['DATE_format'].max()
 start_date = start_date.to_pydatetime()
 end_date = end_date.to_pydatetime()
 
+
+st.header('League Four Factors Percentile Rank')
 # Use Streamlit slider with the datetime objects
 selected_dates = st.slider(
-    "Select date range", 
-    min_value=start_date, 
-    max_value=end_date, 
+    "Select date range",
+    min_value=start_date,
+    max_value=end_date,
     value=(start_date, end_date),
     format="YYYY-MM-DD"
 )
@@ -129,13 +186,13 @@ clean['def_FTR'] = clean['FTM_opp']/clean['FGA_opp']
 
 
 clean['off_EFG_rank'] = clean['off_EFG'].rank(pct=True)
-clean['off_TOV_rank'] = clean['off_TOV'].rank(pct=True)
+clean['off_TOV_rank'] = 1-clean['off_TOV'].rank(pct=True)
 clean['off_OREB_rank'] = clean['off_OREB'].rank(pct=True)
 clean['off_FTR_rank'] = clean['off_FTR'].rank(pct=True)
 
 
 clean['def_EFG_rank'] = 1-clean['def_EFG'].rank(pct=True)
-clean['def_TOV_rank'] = 1-clean['def_TOV'].rank(pct=True)
+clean['def_TOV_rank'] = clean['def_TOV'].rank(pct=True)
 clean['def_OREB_rank'] = 1-clean['def_OREB'].rank(pct=True)
 clean['def_FTR_rank'] = 1-clean['def_FTR'].rank(pct=True)
 
@@ -151,3 +208,92 @@ styled_df = styled_df.format({col: '{:.2f}' for col in display_df.columns[1:]})
 
 st.dataframe(styled_df, height=460)
 
+gamelog = gamelog_pre.merge(rnd[['GAMEID', 'DATE', 'TEAM', 'opp_team']].drop_duplicates(), on = ['TEAM', 'GAMEID'], how = 'left')
+
+all_option = "All Teams"
+# Create options with the "All" option at the beginning
+options = [all_option] + list(gamelog["TEAM"].unique())
+
+# Multiselect widget with default as "All Seasons"
+season_select = st.multiselect(
+    "Select Team",
+    options=options,
+    default=[all_option]
+)
+
+# If "All Seasons" is selected, ignore filtering
+if all_option in season_select:
+    filtered_data = gamelog
+    filtered_data_adv = adv
+    filtered_data_trad = trad
+else:
+    filtered_data = gamelog[gamelog["TEAM"].isin(season_select)]
+    filtered_data_adv = adv[adv["TEAM"].isin(season_select)]
+    filtered_data_trad = trad[trad["TEAM"].isin(season_select)]
+
+ff = filtered_data[['TEAM', 'opp_team', 'DATE', 'EFG', 'TOV', 'OREB', 'FTR', 'opp_efg', 'opp_tov', 'opp_oreb', 'opp_ftr']]
+
+league_avg = list(gamelog[['EFG', 'TOV', 'OREB', 'FTR', 'opp_efg', 'opp_tov',
+       'opp_oreb', 'opp_ftr']].mean())
+league_avg.insert(0, '')
+league_avg.insert(0, '')
+league_avg.insert(0, 'League Average')
+
+ff.loc[len(ff)] = league_avg
+
+ff.columns = ['Team', 'Opp Team', 'Date', 'Off EFG%', 'Off TOV%', 'Off OREB%', 'Off FTR', 'Def EFG%', 'Def TOV%', 'Def OREB%', 'Def FTR']
+nr = filtered_data[['TEAM', 'opp_team', 'DATE', 'POSS', 'ORTG', 'DRTG', 'NETRTG']]
+nr.columns = ['Team', 'Opp Team', 'Date', 'Possessions', 'OffRtg', 'DefRtg', 'NetRtg']
+
+
+st.header('Game Logs')
+
+tab = st.radio("", ["Four Factors", "Net Rating"])
+styled_df_ff = ff.style
+
+
+# Tab 1 content
+if tab == "Four Factors":
+    st.header('Four Factors Game Log')
+    styled_df_ff = styled_df_ff.format({col: '{:.2f}' for col in ff.columns[3:]})
+    st.dataframe(styled_df_ff)
+
+
+# Tab 2 content
+if tab == "Net Rating":
+    st.header('Net Ratings Game Log')
+    st.dataframe(nr)
+
+
+tab2 = st.radio("", ["Advanced", "Traditional"])
+
+filtered_data_adv.columns = ['Player', 'Team', 'TS%', 'eFG%', 'ORB%', 'DRB%',
+       'TRB%', 'AST%', 'TOV%', 'STL%', 'BLK%', 'USG%', 'ORtg',
+       'DRtg', 'eDiff', 'season']
+filtered_data_trad.columns = ['Player', 'Team', 'GP', 'MPG', 'PPG', 'FGM', 'FGA', 'FG%', '3PM',
+       '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'ORB', 'DRB', 'RPG', 'APG', 'SPG',
+       'BPG', 'TOV', 'season']
+# Tab 1 content
+if tab2 == "Advanced":
+    st.header('Player Box Score - Advanced')
+    st.dataframe(filtered_data_adv[filtered_data_adv['season'] == '2025'].sort_values('USG%', ascending = False))
+
+# Tab 2 content
+if tab2 == "Traditional":
+    st.header('Player Box Score - Traditional')
+    st.dataframe(filtered_data_trad[filtered_data_trad['season'] == '2025'].sort_values('PPG', ascending = False))
+
+options = filtered_data_trad[filtered_data_trad['season'] == '2025']['Player'].unique()
+
+# Create the selectbox widget
+selected_option = st.selectbox('Select Player', options)
+
+# Tab 1 content
+if tab2 == "Advanced":
+    st.header('Player Y/Y - Advanced')
+    st.dataframe(filtered_data_adv[filtered_data_adv['Player'] == selected_option].sort_values('season', ascending = True))
+
+# Tab 2 content
+if tab2 == "Traditional":
+    st.header('Player Y/Y - Traditional')
+    st.dataframe(filtered_data_trad[filtered_data_trad['Player'] == selected_option].sort_values('season', ascending = True))
