@@ -41,7 +41,7 @@ select ff.*, ff2.efg as opp_efg, ff2.tov as opp_tov, ff2.oreb as opp_oreb, ff2.f
 from four_factor_gamelog ff
 join four_factor_gamelog ff2 on ff.gameid = ff2.gameid and ff.team <> ff2.team
 )
-select ff.*, poss, ortg, drtg, netrtg, date
+select ff.*, poss, ortg, drtg, netrtg, nrg.date as date_update
 from cte_ff ff
 join net_rating_gamelog nrg on ff.team = nrg.team and ff.gameid = nrg.gameid
 """
@@ -128,12 +128,12 @@ end_date = away['DATE_format'].max()
 start_date = start_date.to_pydatetime()
 end_date = end_date.to_pydatetime()
 
-today_display = gamelog_pre['DATE'].max()
+
+today_display = gamelog_pre['date_update'].max()
 
 st.header('League Four Factors Percentile Rank')
-st.subheader('Last updated' + str(today_display))
+st.write('Last updated: ' + str(today_display))
 
-# Use Streamlit slider with the datetime objects
 selected_dates = st.slider(
     "Select date range",
     min_value=start_date,
