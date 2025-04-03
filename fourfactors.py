@@ -242,7 +242,7 @@ league_avg.insert(0, '')
 league_avg.insert(0, '')
 league_avg.insert(0, 'League Average')
 
-ff.loc[len(ff)] = league_avg
+ff.loc[len(ff) + 1] = league_avg
 
 ff.columns = ['Team', 'Opp Team', 'Date', 'Off EFG%', 'Off TOV%', 'Off OREB%', 'Off FTR', 'Def EFG%', 'Def TOV%', 'Def OREB%', 'Def FTR']
 nr = filtered_data[['TEAM', 'opp_team', 'DATE', 'POSS', 'ORTG', 'DRTG', 'NETRTG']]
