@@ -235,7 +235,7 @@ else:
     filtered_data_trad = trad[trad["TEAM"].isin(season_select)]
 
 ff = filtered_data[['TEAM', 'opp_team', 'DATE', 'EFG', 'TOV', 'OREB', 'FTR', 'opp_efg', 'opp_tov', 'opp_oreb', 'opp_ftr']]
-
+ff.sort_values('DATE', ascending = True, inplace = True)
 league_avg = list(gamelog[['EFG', 'TOV', 'OREB', 'FTR', 'opp_efg', 'opp_tov',
        'opp_oreb', 'opp_ftr']].mean())
 league_avg.insert(0, '')
