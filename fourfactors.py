@@ -246,8 +246,12 @@ clean_grp_ntrg = grp_nrtg[['TEAM', 'POSS_mean', 'ORTG', 'DRTG', 'NETRTG']]
 
 clean_grp_ntrg.iloc[:, 1:] = clean_grp_ntrg.iloc[:, 1:].round(2)
 clean_grp_ntrg.columns = ['Team Name', 'Avg Possessions', 'Offensive Rtg', 'Defensive Rtg', 'Net Rtg']
-styled_df_nrtg = clean_grp_ntrg.style.background_gradient(cmap='coolwarm', subset=['Avg Possessions', 'Offensive Rtg', 'Net Rtg'])
-styled_df_nrtg = clean_grp_ntrg.style.background_gradient(cmap='coolwarm_r', subset=['Defensive Rtg'])
+styled_df_nrtg = (
+    clean_grp_ntrg.style
+    .background_gradient(cmap='coolwarm', subset=['Avg Possessions', 'Offensive Rtg', 'Net Rtg'])
+    .background_gradient(cmap='coolwarm_r', subset=['Defensive Rtg'])
+)
+
 styled_df_nrtg = styled_df_nrtg.format({col: '{:.2f}' for col in clean_grp_ntrg.columns[1:]})
 #
 st.dataframe(styled_df_nrtg, height=460)
