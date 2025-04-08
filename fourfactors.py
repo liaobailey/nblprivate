@@ -53,7 +53,11 @@ sql_trad = """
 select *
 from player_traditional
 """
-
+sql_netrtg = """
+select nrg.team, nrg.poss, gr.final, gr.opp_final, gr.date
+from net_rating_gamelog nrg
+join gamelog_result gr on gr.team = nrg.team and gr.gameid = nrg.gameid
+"""
 
 @st.cache_data
 def load_data_away():
@@ -107,6 +111,15 @@ def load_data_trad():
     con.close()
     return trad
 
+@st.cache_data
+def load_data_nr():
+    # Download the database file
+    gdown.download(f"https://drive.google.com/uc?id={FILE_ID}", DB_FILE, quiet=False)
+    con = duckdb.connect(DB_FILE)
+    nr = con.execute(sql_netrtg).fetchdf()
+    con.close()
+    return nr
+
 
 away_pre = load_data_away()
 home_pre = load_data_home()
@@ -114,6 +127,7 @@ rnd = load_data_rnd()
 gamelog_pre = load_data_gamelog()
 adv = load_data_adv()
 trad = load_data_trad()
+netrtg = load_data_nr()
 
 away = away_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
 home = home_pre.merge(rnd, on = ['TEAM', 'GAMEID'], how = 'left')
@@ -210,6 +224,31 @@ styled_df = display_df.style.background_gradient(cmap='coolwarm', subset=['Off E
 styled_df = styled_df.format({col: '{:.2f}' for col in display_df.columns[1:]})
 
 st.dataframe(styled_df, height=460)
+
+netrtg_filtered = netrtg[(netrtg['DATE'] >= string_list[0]) & (netrtg['DATE'] <= string_list[1])]
+
+grp_nrtg = netrtg_filtered.groupby(['TEAM']).agg({
+    'POSS':['sum', 'mean'],
+    'FINAL':'sum',
+    'opp_final':'sum'
+})
+
+grp_nrtg.columns = ['_'.join(col).strip() for col in grp_nrtg.columns.values]
+grp_nrtg = grp_nrtg.reset_index()
+
+
+grp_nrtg['ORTG'] = grp_nrtg['FINAL_sum']/grp_nrtg['POSS_sum']*100.0
+grp_nrtg['DRTG'] = grp_nrtg['opp_final_sum']/grp_nrtg['POSS_sum']*100.0
+grp_nrtg['NETRTG'] = grp_nrtg['ORTG'] - grp_nrtg['DRTG']
+
+clean_grp_ntrg = grp_nrtg[['TEAM', 'POSS_mean', 'ORTG', 'DRTG', 'NETRTG']]
+
+clean_grp_ntrg.iloc[:, 1:] = clean_grp_ntrg.iloc[:, 1:].round(2)
+clean_grp_ntrg.columns = ['Team Name', 'Avg Possessions', 'Offensive Rtg', 'Defensive Rtg', 'Net Rtg']
+styled_df_nrtg = clean_grp_ntrg.style.background_gradient(cmap='coolwarm', subset=['Avg Possessions', 'Offensive Rtg', 'Defensive Rtg', 'Net Rtg'])
+styled_df_nrtg = styled_df_nrtg.format({col: '{:.2f}' for col in clean_grp_ntrg.columns[1:]})
+#
+st.dataframe(styled_df_nrtg, height=460)
 
 gamelog = gamelog_pre.merge(rnd[['GAMEID', 'DATE', 'TEAM', 'opp_team']].drop_duplicates(), on = ['TEAM', 'GAMEID'], how = 'left')
 
