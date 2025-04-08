@@ -221,6 +221,7 @@ display_df = clean[['TEAM_self', 'off_EFG_rank', 'off_TOV_rank', 'off_OREB_rank'
 display_df.iloc[:, 1:] = display_df.iloc[:, 1:].round(2)
 display_df.columns = ['Team Name', 'Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank']
 styled_df = display_df.style.background_gradient(cmap='coolwarm', subset=['Off EFG% Rank', 'Off TOV% Rank', 'Off OREB% Rank', 'Off FTR Rank', 'Def EFG% Rank', 'Def TOV% Rank', 'Def OREB% Rank', 'Def FTR Rank'])
+
 styled_df = styled_df.format({col: '{:.2f}' for col in display_df.columns[1:]})
 
 st.dataframe(styled_df, height=460)
@@ -245,7 +246,8 @@ clean_grp_ntrg = grp_nrtg[['TEAM', 'POSS_mean', 'ORTG', 'DRTG', 'NETRTG']]
 
 clean_grp_ntrg.iloc[:, 1:] = clean_grp_ntrg.iloc[:, 1:].round(2)
 clean_grp_ntrg.columns = ['Team Name', 'Avg Possessions', 'Offensive Rtg', 'Defensive Rtg', 'Net Rtg']
-styled_df_nrtg = clean_grp_ntrg.style.background_gradient(cmap='coolwarm', subset=['Avg Possessions', 'Offensive Rtg', 'Defensive Rtg', 'Net Rtg'])
+styled_df_nrtg = clean_grp_ntrg.style.background_gradient(cmap='coolwarm', subset=['Avg Possessions', 'Offensive Rtg', 'Net Rtg'])
+styled_df_nrtg = clean_grp_ntrg.style.background_gradient(cmap='warmcool', subset=['Defensive Rtg'])
 styled_df_nrtg = styled_df_nrtg.format({col: '{:.2f}' for col in clean_grp_ntrg.columns[1:]})
 #
 st.dataframe(styled_df_nrtg, height=460)
