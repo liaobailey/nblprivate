@@ -247,7 +247,7 @@ ff.loc[len(ff) + 1] = league_avg
 ff.columns = ['Team', 'Opp Team', 'Date', 'Off EFG%', 'Off TOV%', 'Off OREB%', 'Off FTR', 'Def EFG%', 'Def TOV%', 'Def OREB%', 'Def FTR']
 nr = filtered_data[['TEAM', 'opp_team', 'DATE', 'POSS', 'ORTG', 'DRTG', 'NETRTG']]
 nr.columns = ['Team', 'Opp Team', 'Date', 'Possessions', 'OffRtg', 'DefRtg', 'NetRtg']
-
+nr.sort_values('DATE', ascending = True, inplace = True)
 
 st.header('Game Logs')
 
